@@ -7,8 +7,8 @@ import {
 } from 'node-ar.js';
 import GLTFLoader from 'three-gltf-loader';
 import OrbitControls from 'three-orbit-controls';
-import sceneGLTF from './scene.gltf';
-import markerPattern from './patt.hiro';
+import robotSceneGLTF from './models/robot/scene.gltf';
+import hiroMarkerPattern from './patterns/patt.hiro';
 import cameraParam from './camera_para.dat';
 
 const ready = cb => {
@@ -75,19 +75,22 @@ ready(function() {
     }
   }
 
+  // GLTF models viewable on this display
+  const models = [robotSceneGLTF];
+
   // Build Mesh
   const markerRoot = new THREE.Group;
   scene.add(markerRoot);
 
   const markerControls = new ArMarkerControls(arToolkitContext, markerRoot, {
     type: 'pattern',
-    patternUrl: markerPattern,
+    patternUrl: hiroMarkerPattern,
     changeMatrixMode: 'cameraTransformMatrix'
   });
 
   // Prepare geometries and meshes
   const loader = new GLTFLoader();
-  loader.load(sceneGLTF, gltf => {
+  loader.load(robotSceneGLTF, gltf => {
     const object = gltf.scene;
     object.rotateX(-180);
     const gltfAnimation = gltf.animations;
