@@ -1,5 +1,7 @@
-# NODE-AR.JS Demo
+# Custom Markers
 
-Demonstrates [node version](http://npm.im/node-ar.js) of [AR.js](https://github.com/jeromeetienne/ar.js)
+This repository uses node.js and its code recognizes multiple markers in a scene. The demo detects just hiro and kanji
+markers but you can modify to include any of the other markers included in the markers directory. Or add new markers.
 
-View demo here: [Live demo](https://josephrexme.github.io/node-ar-example)
+### Demo
+https://uwmiml.github.io/custom-markers

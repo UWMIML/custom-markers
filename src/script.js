@@ -3,12 +3,13 @@ import {
   ArToolkitSource,
   ArToolkitContext,
   ArMarkerControls,
-  ArSmoothedControls
 } from 'node-ar.js';
 import GLTFLoader from 'three-gltf-loader';
 import OrbitControls from 'three-orbit-controls';
 import robotSceneGLTF from './models/robot/scene.gltf';
-import hiroMarkerPattern from './patterns/patt.hiro';
+import mechDogGLTF from './models/mech_dog/dogscene.gltf';
+import hiroMarkerPattern from './patterns/hiro.patt';
+import kanjiMarkerPattern from './patterns/kanji.patt';
 import cameraParam from './camera_para.dat';
 
 const ready = cb => {
@@ -76,36 +77,40 @@ ready(function() {
   }
 
   // GLTF models viewable on this display
-  const models = [robotSceneGLTF];
+  const models = [
+    { mesh: mechDogGLTF, pattern: hiroMarkerPattern },
+    { mesh: robotSceneGLTF, pattern: kanjiMarkerPattern },
+  ];
 
-  // Build Mesh
-  const markerRoot = new THREE.Group;
-  scene.add(markerRoot);
+  models.forEach(model => {
+    // Build Mesh
+    const markerRoot = new THREE.Group;
+    scene.add(markerRoot);
 
-  const markerControls = new ArMarkerControls(arToolkitContext, markerRoot, {
-    type: 'pattern',
-    patternUrl: hiroMarkerPattern,
-    changeMatrixMode: 'cameraTransformMatrix'
-  });
-
-  // Prepare geometries and meshes
-  const loader = new GLTFLoader();
-  loader.load(robotSceneGLTF, gltf => {
-    const object = gltf.scene;
-    object.rotateX(-180);
-    const gltfAnimation = gltf.animations;
-    markerRoot.add(object);
-    object.traverse(node => {
-      if(node.material){
-        // Modify the material here
+    const markerControls = new ArMarkerControls(arToolkitContext, markerRoot, {
+      type: 'pattern',
+      patternUrl: model.pattern,
+      changeMatrixMode: 'cameraTransformMatrix'
+    });
+    // Prepare geometries and meshes
+    const loader = new GLTFLoader();
+    loader.load(model.mesh, gltf => {
+      const object = gltf.scene;
+      object.rotateX(-180);
+      const gltfAnimation = gltf.animations;
+      markerRoot.add(object);
+      object.traverse(node => {
+        if(node.material){
+          // Modify the material here
+        }
+      });
+      if(gltfAnimation && gltfAnimation.length) {
+        mixer = new THREE.AnimationMixer(object);
+        gltfAnimation.forEach(animation => {
+          mixer.clipAction(animation).play();
+        });
       }
     });
-    if(gltfAnimation && gltfAnimation.length) {
-      mixer = new THREE.AnimationMixer(object);
-      gltfAnimation.forEach(animation => {
-        mixer.clipAction(animation).play();
-      });
-    }
   });
   animate();
 
